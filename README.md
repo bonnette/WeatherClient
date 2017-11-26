@@ -1,6 +1,8 @@
 # WeatherClient
 Is an ESP8266 with OLED display designed to connect to a Switchdoc Labs WeatherPlus board and display weather data to the user over wifi.
 
+![Client Photo](https://github.com/bonnette/WeatherClient/blob/master/WCli.jpg)
+
 The purpose of each file is:
 
 -  WCi.jpg is a photo of the completed unit.

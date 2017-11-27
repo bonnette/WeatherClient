@@ -110,8 +110,9 @@
     // The WeatherClient loads the ssid and password for the wireless connection
     
     WiFi.mode(WIFI_STA);            // To Avoid Broadcasting An SSID
-
-    WiFi.begin("Your WiFi SSID", "Your WiFi Password");      // The wireless SSID That We Want To Connect to and a password
+    //WiFi.begin("TRICOUNTY_A", "1222324252");      // The wireless SSID That We Want To Connect to and a password
+    //WiFi.config(IPAddress(192,168,1,221), IPAddress(192,168,1,1), IPAddress(255,255,255,0)); //Define a static client ip address (not using DHCP)
+    WiFi.begin("suddenlink.net-17C3", "F5WBW4779600939");      // The wireless SSID That We Want To Connect to and a password
     WiFi.config(IPAddress(192,168,0,221), IPAddress(192,168,0,1), IPAddress(255,255,255,0)); //Define a static client ip address (not using DHCP)
 
 
@@ -183,7 +184,7 @@ while (client.connected())
   if (client.available())
   {
     String line = client.readStringUntil(EOF); // the last charater in the data is a "EOF" so stop reading when we get this.
-    //Serial.println(line); // for testing this will print everything
+    Serial.println(line); // for testing this will print everything
     
 // Display Information on ther serial terminal
 // Extract and display the current time from the recieved data
@@ -207,8 +208,10 @@ while (client.connected())
 // Extract and display the current outdoor temperature.
     int temp = line.indexOf(String(","));            // The Outdoor temperature is at the very first comma so we set the index to there.
     String ODtemp = line.substring(temp - 4,temp );  //The 1st comma is at the end of the "Outdoor Temp" string. So we back up 4 charaters to extract the temp.
+    //Serial.println(ODtemp);
     int tempint = ODtemp.toInt();                   // convert to int so we can convert "C" to Faranheight 
-    tempint = tempint*1.8+32;                       // convert "C" to "F"
+    //Serial.println(String(tempint));
+    tempint = (tempint*1.8)+32;                       // convert "C" to "F"
     Serial.println("Temp in C = " + ODtemp);
     Serial.println("The Outdoor Temp is: " + String(tempint)); // Display the temp in "F"
 
@@ -220,9 +223,9 @@ while (client.connected())
 
 // Extract and display the current indoor temperature.
     int tempi = line.indexOf(String(","), humi + 1); // Search for indoor Temp
-    String IDtemp = line.substring(tempi - 5,tempi); // when found extract the indoor Temp
+    String IDtemp = line.substring(tempi - 4,tempi); // when found extract the indoor Temp
     int idtempint = IDtemp.toInt(); // convert to int so we can convert "C" to Faranheight 
-    idtempint = idtempint*1.8+32; // convert "C" to "F"
+    idtempint = (idtempint*1.8)+32; // convert "C" to "F"
     Serial.println("Temp in C = " + IDtemp);
     Serial.println("The Indoor Temperature is: " + String(idtempint)); // Display  the indoor Temp
 
@@ -247,7 +250,7 @@ while (client.connected())
     int wspeed = hold;
     int wdir = line.indexOf(String(","), wspeed + 1); // Search for Wind direction
     String ODspeed = line.substring(wspeed - 4,wspeed); // when found extract the Wind Speed
-    String ODdir = line.substring(wdir - 5,wdir); // when found extract the Wind direction
+    String ODdir = line.substring(wdir - 4,wdir); // when found extract the Wind direction
     String NUMdir = ODdir;
     int INTdir = ODdir.toInt();
     ODdir = getWdir(INTdir);

@@ -110,8 +110,8 @@
     // The WeatherClient loads the ssid and password for the wireless connection
     
     WiFi.mode(WIFI_STA);            // To Avoid Broadcasting An SSID
-)
-    WiFi.begin("Your WiFi SSID", "Your WiFi Password");      // The wireless SSID That We Want To Connect to and a password
+
+    WiFi.begin("Your SSID", "Your WiFi Password");      // The wireless SSID That We Want To Connect to and a password
     WiFi.config(IPAddress(192,168,0,221), IPAddress(192,168,0,1), IPAddress(255,255,255,0)); //Define a static client ip address (not using DHCP)
 
 
@@ -189,15 +189,10 @@ while (client.connected())
 // Extract and display the current time from the recieved data
 // The following code counts commas. 
     int hold = 0;
-    int nextcomma = 0;
-    for (int commas = 0; commas < 17; commas++) {           // Set the number of commas to find = to 17 because this is where the time is stored in "wthrdata.dat"
-      if (commas == 0) {hold = line.indexOf(String(","));}  // The first time through we set the index number of the very first comma into "hold"
-      nextcomma = line.indexOf(String(","), hold +1);       // we then find the second comma and store the index number into "nextcomma"
-      nextcomma = nextcomma - hold;                         // We adjust the "nextcomma" to reflect the difference between the last comma found and the "hold" comma
-      hold = hold + nextcomma;                              // We add the difference number plus the last "hold" number and store it in "hold"
-      //Serial.println(hold);                               
-  }
-    int tim = hold;                                    // the cumulation of indexes of commas is used to get the time.
+    // Get time (17th comma)
+    hold = GetComma(17, line);          // Place the index number into "hold"
+
+    int tim = hold;                                    // the index number of the 17th commas is used to get the time.
     //Serial.println(tim);
     String ODtimd = line.substring(tim - 20,tim - 9); // The 17th comma is at the end of the "Date/Time" string. So we back up 20 charaters and extract the date
     String ODtimt = line.substring(tim - 9,tim - 1); // The 17th comma is at the end of the "Date/Time" string. So we back up 9 charaters to extract the time.
@@ -237,19 +232,14 @@ while (client.connected())
     Serial.println("The Barometric Pressure is: " + String(pressint)); // Display  the pressure in inches of mercury
 
 // Extract and display the current wind speed
-    hold = 0;
-    nextcomma = 0;
-    for (int commas = 0; commas < 6; commas++) {
-      if (commas == 0) {hold = line.indexOf(String(","));}
-      nextcomma = line.indexOf(String(","), hold +1);
-      nextcomma = nextcomma - hold;
-      hold = hold + nextcomma;
-      //Serial.println(hold);    
-  }
-    int wspeed = hold;
-    int wdir = line.indexOf(String(","), wspeed + 1); // Search for Wind direction
+    // Get wind speed (5th comma)
+    hold = GetComma(5, line);
+    int wspeed = hold; //place index number into wind speed
+    // Get wind Direction (7th comma)   
+    hold = GetComma(7, line);     
+    int wdir = hold; //place index number into wind speed
     String ODspeed = line.substring(wspeed - 4,wspeed); // when found extract the Wind Speed
-    String ODdir = line.substring(wdir - 4,wdir); // when found extract the Wind direction
+    String ODdir = line.substring(wdir - 5,wdir); // when found extract the Wind direction
     String NUMdir = ODdir;
     int INTdir = ODdir.toInt();
     ODdir = getWdir(INTdir);
@@ -385,6 +375,25 @@ while (client.connected())
         return("North North West");}
         return("Unknown");
     }
+
+//=======================================================================================================================================
+// Routine to extract an index number for the position of the nth comma in "wthrdata.dat" x= number of commas to the data y= wthrdata.dat
+// The number of commas (x) is passed to this routine. The text with the commas in it (y) is passed to this routine.
+// The index number (the number of charaters counted to the nth comma) is returned (rtnval)
+//=======================================================================================================================================
+    int GetComma(int x, String y)
+    {
+    int rtnval = 0;
+    int nxtcmma = 0;
+    for (int cmmas = 0; cmmas < x; cmmas++) {              // Set the number of commas to find (17 is where the time is stored in "wthrdata.dat")
+      if (cmmas == 0) {rtnval = y.indexOf(String(","));}   // The first time through we set the index number of the very first comma into "rtnval"
+      nxtcmma = y.indexOf(String(","), rtnval +1);         // we then find the second comma and store the index number into "nxtcmma"
+      nxtcmma = nxtcmma - rtnval;                          // We adjust the "nxtcmma" to reflect the difference between the last comma found and the "rtnval" comma
+      rtnval = rtnval + nxtcmma;                           // We add the difference number plus the last "rtnval" number and store it in "rtnval"
+      //Serial.println(hold);    
+  }
+      return(rtnval);                                      // We return the number of charaters counted (which gives us the position of the data needed)
+      }
 
 //====================================================================================
 

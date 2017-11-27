@@ -110,9 +110,8 @@
     // The WeatherClient loads the ssid and password for the wireless connection
     
     WiFi.mode(WIFI_STA);            // To Avoid Broadcasting An SSID
-    //WiFi.begin("TRICOUNTY_A", "1222324252");      // The wireless SSID That We Want To Connect to and a password
-    //WiFi.config(IPAddress(192,168,1,221), IPAddress(192,168,1,1), IPAddress(255,255,255,0)); //Define a static client ip address (not using DHCP)
-    WiFi.begin("suddenlink.net-17C3", "F5WBW4779600939");      // The wireless SSID That We Want To Connect to and a password
+
+    WiFi.begin("Your SSID", "Your Wireless Password");      // The wireless SSID That We Want To Connect to and a password
     WiFi.config(IPAddress(192,168,0,221), IPAddress(192,168,0,1), IPAddress(255,255,255,0)); //Define a static client ip address (not using DHCP)
 
 

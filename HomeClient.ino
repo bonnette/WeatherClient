@@ -27,9 +27,9 @@
  *   HH Clears the screen
  *   
  *  ********************************************************************************************************************************* 
- *   This section explains how data is extracted from information sent from the WeatherPlus board.
+ *   This section explains how data is extracted from information sent from the WeatherPi.
  *   
- *   Data from the WeatherPlus board looks like this:
+ *   Data from the WeatherPi looks like this:
  *   
  *   {"FullDataString": "25.10,51.30,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0,09/10/2017 10:16:20,,0,-1,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,V:1,WXLMB ,", , "id": "1", "name": "OurWeather", 
  *   "connected": true}<--------------------------------------This is the final charater sent from the WeatherPi.
@@ -46,7 +46,7 @@
  *   Serial.println("The Time is: " + ODtimt);-------------------------------------------FF
  *   
  *   AA reads the data comming from the WeatherPi using the function call "client.readStringUntil". The function reads all of the text
- *      comming from the WeatherPlus board and places it into a variable "line" until it gets to a "EOF" charater. At this charater the function stops reading. 
+ *      comming from the WeatherPi and places it into a variable "line" until it gets to a "EOF" charater. At this charater the function stops reading. 
  *      Now, "line" contains all of the data drom the WeatherPi (as shown above). 
  *   BB Now we will get the "time" infromation from the data inside "line". This is done by counting the commas in the variable "line" and getting an index number that represents the position
  *      in the data of the "time data"( the 17th comma, see code below) We save that index number into a variable called "tim"
@@ -76,11 +76,11 @@
 //------------------------------------------------------------------------------------
 // WIFI Module Role & Port
 //------------------------------------------------------------------------------------
-// This WIFI Module Code Works As A Client that Will Connect To A WeatherPlus (server) board With an TCP/IP address of 192.168.0.220
+// This WIFI Module Code Works As A Client that Will Connect To A WeatherPi (Web server) With an TCP/IP address of 192.168.0.196
 
   int ServerPort  = 80;
-  //const char* host = "192.168.1.77"; // WeatherPlus board address
-  const char* host = "192.168.0.196"; // WeatherPlus board address
+  //const char* host = "192.168.1.77"; // WeatherPi address
+  const char* host = "192.168.0.196"; // WeatherPi address
   
   WiFiClient      client; //initiate Wi-Fi client as "client"
 //====================================================================================
@@ -110,8 +110,8 @@
     // The WeatherClient loads the ssid and password for the wireless connection
     
     WiFi.mode(WIFI_STA);            // To Avoid Broadcasting An SSID
-
-    WiFi.begin("Your SSID", "Your Wireless Password");      // The wireless SSID That We Want To Connect to and a password
+)
+    WiFi.begin("Your WiFi SSID", "Your WiFi Password");      // The wireless SSID That We Want To Connect to and a password
     WiFi.config(IPAddress(192,168,0,221), IPAddress(192,168,0,1), IPAddress(255,255,255,0)); //Define a static client ip address (not using DHCP)
 
 
@@ -259,8 +259,8 @@ while (client.connected())
     
     client.stop(); // disconnect from server so we don't keep displaying the info.
 
-//    int t = 5;
-//    while(t>0){   // Display information on OLED 5 (1 minute 15 seconds) times before getting data from WeatherPlus again. 
+//    int t = 5;     // This is used to decrease the number of times the client asks for weather info
+//    while(t>0){   // Display information on OLED 5 (1 minute 15 seconds) times before getting data from WeatherPi again. 
     
     //Display on OLED current Time
     display.setTextAlignment(TEXT_ALIGN_LEFT);

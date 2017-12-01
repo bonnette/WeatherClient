@@ -83,7 +83,8 @@
 // This WIFI Module Code Works As A Client that Will Connect To A WeatherPlus (server) board With an TCP/IP address of 192.168.0.220
 
   int ServerPort  = 80;
-  const char* host = "192.168.0.220"; // WeatherPlus board address
+  //const char* host = "192.168.1.77"; // WeatherPlus board address
+  const char* host = "192.168.0.196"; // WeatherPlus board address
   
   WiFiClient      client; //initiate Wi-Fi client as "client"
 //====================================================================================
@@ -113,8 +114,10 @@
     // The WeatherClient loads the ssid and password for the wireless connection
     
     WiFi.mode(WIFI_STA);            // To Avoid Broadcasting An SSID
-    WiFi.begin("Your Wireless SSID", "Your Wireless Password");      // The wireless SSID That We Want To Connect to and a password
-    WiFi.config(IPAddress(192,168,0,219), IPAddress(192,168,0,1), IPAddress(255,255,255,0)); //Define a static client ip address (not using DHCP)
+
+    WiFi.begin("Your SSID", "Your WiFi password");      // The wireless SSID That We Want To Connect to and a password
+    WiFi.config(IPAddress(192,168,0,221), IPAddress(192,168,0,1), IPAddress(255,255,255,0)); //Define a static client ip address (not using DHCP)
+
 
     // Printing Message for the user that a connetion is in progress
     Serial.println("**** Connecting To " + WiFi.SSID() + " ****");
@@ -167,6 +170,7 @@ client.print(String("GET /") + " HTTP/1.1\r\n" +
              "Connection: close\r\n" +
              "\r\n"
             );
+
   }
   else {
     Serial.println("Connection Failed");
@@ -186,7 +190,7 @@ while (client.connected())
   if (client.available())
   {
     String line = client.readStringUntil('}'); // the last charater in the data is a "}" so stop reading when we get this.
-    //Serial.println(line); // for testing this will print everything
+    Serial.println(line); // for testing this will print everything
 // Display Information on ther serial terminal
 // Extract and display the current time from the recieved data
     int tim = line.indexOf(String("OurWeatherTime")); // search for the time
@@ -208,11 +212,29 @@ while (client.connected())
     String ODhumi = line.substring(humi + 18,humi + 23); // when found extract the humidity
     Serial.println("The Outdoor Humidity is: " + ODhumi); // Display  the Humidity
 
+// Extract and display the current indoor temperature.
+    int tempi = line.indexOf(String("IndoorTemperature")); // Search for indoor Temp
+    String IDtemp = line.substring(tempi + 20,tempi + 25); // when found extract the indoor Temp
+    int idtempint = IDtemp.toInt(); // convert to int so we can convert "C" to Faranheight 
+    idtempint = idtempint*1.8+32; // convert "C" to "F"
+    Serial.println("The Indoor Temperature is: " + String(idtempint)); // Display  the indoor Temp
+
+// Extract and display the current barometric pressure.
+    int prsur = line.indexOf(String("BarometricPressure")); // Search for pressure
+    String IDpress = line.substring(prsur + 21,prsur + 30); // when found extract the pressure
+    float pressint = IDpress.toInt(); // convert to int so we can convert to inch mercury 
+    pressint = (pressint/33.863)/100; // convert hga to inches mercury
+    Serial.println("The Barometric Pressure is: " + IDpress); // Display  the pressure in hGa
+    Serial.println("The Barometric Pressure is: " + String(pressint)); // Display  the pressure in inches of mercury
+
 // Extract and display the current wind speed
     int wspeed = line.indexOf(String("CurrentWindSpeed")); // Search for Wind Speed
     int wdir = line.indexOf(String("CurrentWindDirection")); // Search for Wind direction
-    String ODspeed = line.substring(wspeed + 20,wspeed + 24); // when found extract the Wind Speed
-    String ODdir = line.substring(wdir + 24,wdir + 28); // when found extract the Wind direction
+    String ODspeed = line.substring(wspeed + 19,wspeed + 24); // when found extract the Wind Speed
+    int ODspeedint = ODspeed.toInt();
+    ODspeedint = ODspeedint * 0.62137119223733;
+    ODspeed = String(ODspeedint);
+    String ODdir = line.substring(wdir + 23,wdir + 28); // when found extract the Wind direction
     int INTdir = ODdir.toInt();
     ODdir = getWdir(INTdir);
     Serial.println("The Wind Speed is: " + ODspeed + " MPH"); // Display  the Wind Speed
@@ -220,10 +242,8 @@ while (client.connected())
     
     client.stop(); // disconnect from server so we don't keep displaying the info.
 
-	// The Weather Client was hitting the WeatherPlus too often. So the "While Loop" below displays data 5 times then gets new data.
-	
     int t = 5;
-    while(t>0){   // Display information on OLED 5 (1 minute) times before getting data from WeatherPlus again. 
+    while(t>0){   // Display information on OLED 5 (1 minute 15 seconds) times before getting data from WeatherPlus again. 
     
     //Display on OLED current Time
     display.setTextAlignment(TEXT_ALIGN_LEFT);
@@ -239,7 +259,7 @@ while (client.connected())
     // Display on OLED Temperature   
     display.setTextAlignment(TEXT_ALIGN_LEFT);
     display.setFont(ArialMT_Plain_16);
-    display.drawString(0,0,"Temperature");
+    display.drawString(0,0,"Outdoor Temp");
     display.setFont(ArialMT_Plain_24);
     display.drawString(30, 25,String(tempint) + " F");
     display.display();
@@ -252,6 +272,26 @@ while (client.connected())
     display.drawString(0,0,"Humidity");
     display.setFont(ArialMT_Plain_24);
     display.drawString(15,25,ODhumi + " %");
+    display.display();
+    delay(5000);
+    display.clear();
+
+    // Display on OLED indoor Temperature   
+    display.setTextAlignment(TEXT_ALIGN_LEFT);
+    display.setFont(ArialMT_Plain_16);
+    display.drawString(0,0,"Indoor Temp");
+    display.setFont(ArialMT_Plain_24);
+    display.drawString(30, 25,String(idtempint) + " F");
+    display.display();
+    delay(5000);
+    display.clear();
+
+    // Display on OLED Barometric Pressure   
+    display.setTextAlignment(TEXT_ALIGN_LEFT);
+    display.setFont(ArialMT_Plain_16);
+    display.drawString(0,0,"Pressure");
+    display.setFont(ArialMT_Plain_24);
+    display.drawString(30, 25,String(pressint) + " ");
     display.display();
     delay(5000);
     display.clear();

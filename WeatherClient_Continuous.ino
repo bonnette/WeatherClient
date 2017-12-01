@@ -83,7 +83,8 @@
 // This WIFI Module Code Works As A Client that Will Connect To A WeatherPlus (server) board With an TCP/IP address of 192.168.0.220
 
   int ServerPort  = 80;
-  const char* host = "192.168.0.220"; // WeatherPlus board address
+  //const char* host = "192.168.1.77"; // WeatherPlus board address
+  const char* host = "192.168.0.196"; // WeatherPlus board address
   
   WiFiClient      client; //initiate Wi-Fi client as "client"
 //====================================================================================
@@ -113,8 +114,10 @@
     // The WeatherClient loads the ssid and password for the wireless connection
     
     WiFi.mode(WIFI_STA);            // To Avoid Broadcasting An SSID
-    WiFi.begin("Your wireless SSID", "Your wireless password");      // The wireless SSID That We Want To Connect to and a password
-    WiFi.config(IPAddress(192,168,0,219), IPAddress(192,168,0,1), IPAddress(255,255,255,0)); //Define a static client ip address (not using DHCP)
+
+    WiFi.begin("Your SSID", "Your WiFi password");      // The wireless SSID That We Want To Connect to and a password
+    WiFi.config(IPAddress(192,168,0,221), IPAddress(192,168,0,1), IPAddress(255,255,255,0)); //Define a static client ip address (not using DHCP)
+
 
     // Printing Message for the user that a connetion is in progress
     Serial.println("**** Connecting To " + WiFi.SSID() + " ****");
@@ -167,6 +170,7 @@ client.print(String("GET /") + " HTTP/1.1\r\n" +
              "Connection: close\r\n" +
              "\r\n"
             );
+
   }
   else {
     Serial.println("Connection Failed");
@@ -186,7 +190,7 @@ while (client.connected())
   if (client.available())
   {
     String line = client.readStringUntil('}'); // the last charater in the data is a "}" so stop reading when we get this.
-    //Serial.println(line); // for testing this will print everything
+    Serial.println(line); // for testing this will print everything
 // Display Information on ther serial terminal
 // Extract and display the current time from the recieved data
     int tim = line.indexOf(String("OurWeatherTime")); // search for the time
@@ -226,8 +230,11 @@ while (client.connected())
 // Extract and display the current wind speed
     int wspeed = line.indexOf(String("CurrentWindSpeed")); // Search for Wind Speed
     int wdir = line.indexOf(String("CurrentWindDirection")); // Search for Wind direction
-    String ODspeed = line.substring(wspeed + 20,wspeed + 24); // when found extract the Wind Speed
-    String ODdir = line.substring(wdir + 24,wdir + 28); // when found extract the Wind direction
+    String ODspeed = line.substring(wspeed + 19,wspeed + 24); // when found extract the Wind Speed
+    int ODspeedint = ODspeed.toInt();
+    ODspeedint = ODspeedint * 0.62137119223733;
+    ODspeed = String(ODspeedint);
+    String ODdir = line.substring(wdir + 23,wdir + 28); // when found extract the Wind direction
     int INTdir = ODdir.toInt();
     ODdir = getWdir(INTdir);
     Serial.println("The Wind Speed is: " + ODspeed + " MPH"); // Display  the Wind Speed

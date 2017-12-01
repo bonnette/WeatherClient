@@ -111,7 +111,7 @@
     
     WiFi.mode(WIFI_STA);            // To Avoid Broadcasting An SSID
 
-    WiFi.begin("Your SSID", "Your WiFi Password");      // The wireless SSID That We Want To Connect to and a password
+    WiFi.begin("Your SSID", "Your WiFi password");      // The wireless SSID That We Want To Connect to and a password
     WiFi.config(IPAddress(192,168,0,221), IPAddress(192,168,0,1), IPAddress(255,255,255,0)); //Define a static client ip address (not using DHCP)
 
 
@@ -205,9 +205,10 @@ while (client.connected())
     //Serial.println(ODtemp);
     int tempint = ODtemp.toInt();                   // convert to int so we can convert "C" to Faranheight 
     //Serial.println(String(tempint));
-    tempint = (tempint*1.8)+32;                       // convert "C" to "F"
+    tempint = (tempint*1.8)+32;   // convert "C" to "F"
+    ODtemp = String(tempint);
     Serial.println("Temp in C = " + ODtemp);
-    Serial.println("The Outdoor Temp is: " + String(tempint)); // Display the temp in "F"
+    Serial.println("The Outdoor Temp is: " + ODtemp); // Display the temp in "F"
 
 
 // Extract and display the current outdoor humidity.
@@ -220,8 +221,9 @@ while (client.connected())
     String IDtemp = line.substring(tempi - 4,tempi); // when found extract the indoor Temp
     int idtempint = IDtemp.toInt(); // convert to int so we can convert "C" to Faranheight 
     idtempint = (idtempint*1.8)+32; // convert "C" to "F"
+    IDtemp = String(idtempint);
     Serial.println("Temp in C = " + IDtemp);
-    Serial.println("The Indoor Temperature is: " + String(idtempint)); // Display  the indoor Temp
+    Serial.println("The Indoor Temperature is: " + IDtemp); // Display  the indoor Temp
 
 // Extract and display the current barometric pressure.
     int prsur = line.indexOf(String(","), tempi + 1); // Search for pressure
@@ -239,6 +241,9 @@ while (client.connected())
     hold = GetComma(7, line);     
     int wdir = hold; //place index number into wind speed
     String ODspeed = line.substring(wspeed - 4,wspeed); // when found extract the Wind Speed
+    int ODspeedint = ODspeed.toInt();
+    ODspeedint = ODspeedint * 0.62137119223733;
+    ODspeed = String(ODspeedint);
     String ODdir = line.substring(wdir - 5,wdir); // when found extract the Wind direction
     String NUMdir = ODdir;
     int INTdir = ODdir.toInt();

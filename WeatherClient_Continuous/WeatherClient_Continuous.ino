@@ -1,5 +1,5 @@
 
-/*  This code was written by Larry Bonnette.
+/*  This code was written by Larry Bonnette Dec 2017.
  *  with help from code gleaned from many sources on the internet.
  *   
  *   

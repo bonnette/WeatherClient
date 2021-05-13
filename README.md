@@ -6,7 +6,7 @@ Is an ESP8266 with OLED display designed to connect to a Switchdoc Labs WeatherP
 The purpose of each file is:
 
 -  WCi.jpg is a photo of the completed unit.
--  HomeClinet.ino is used on a WeatherPi and should **not** be used to "talk" to the WeatherPlus board
+-  HomeClient.ino is used on a WeatherPi and should **not** be used to "talk" to the WeatherPlus board
 - .FCStd files are "FreeCad" source files
 - .cdr file is a CorelDraw file with dimensions of the unit
 - .ino files are two different versions of the units code (see wiki)
